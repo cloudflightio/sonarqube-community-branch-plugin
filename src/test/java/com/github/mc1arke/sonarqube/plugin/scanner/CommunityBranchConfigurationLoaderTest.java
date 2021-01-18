@@ -106,6 +106,20 @@ public class CommunityBranchConfigurationLoaderTest {
     }
 
     @Test
+    public void testAlternativeParamSpecification() {
+        ProjectBranches branchInfo = mock(ProjectBranches.class);
+        when(branchInfo.isEmpty()).thenReturn(true);
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("sonar.gitlab.ref_name", "dummy");
+
+        BranchConfiguration branchConfiguration = testCase.load(parameters, branchInfo, mock(ProjectPullRequests.class));
+
+        assertEquals("dummy", branchConfiguration.branchName());
+        assertEquals(BranchType.BRANCH, branchConfiguration.branchType());
+    }
+
+    @Test
     public void testWarningWhenTargetBranchParameterSpecified() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("sonar.branch.name", "feature/shortLivedBranch");

@@ -47,7 +47,7 @@ public class CommunityBranchConfigurationLoader implements BranchConfigurationLo
     private static final Logger LOGGER = Loggers.get(CommunityBranchConfigurationLoader.class);
 
     private static final Set<String> BRANCH_ANALYSIS_PARAMETERS =
-            new HashSet<>(Collections.singletonList(ScannerProperties.BRANCH_NAME));
+            new HashSet<>(Arrays.asList(ScannerProperties.BRANCH_NAME, "sonar.gitlab.ref_name"));
 
     private static final Set<String> PULL_REQUEST_ANALYSIS_PARAMETERS = new HashSet<>(
             Arrays.asList(ScannerProperties.PULL_REQUEST_BRANCH, ScannerProperties.PULL_REQUEST_KEY,
@@ -73,7 +73,8 @@ public class CommunityBranchConfigurationLoader implements BranchConfigurationLo
             LOGGER.warn(warning);
         }
         if (BRANCH_ANALYSIS_PARAMETERS.stream().anyMatch(localSettings::containsKey)) {
-            return createBranchConfiguration(localSettings.get(ScannerProperties.BRANCH_NAME),
+            String branchName = localSettings.get(localSettings.keySet().stream().filter(BRANCH_ANALYSIS_PARAMETERS::contains).findFirst().get());
+            return createBranchConfiguration(branchName,
                                              projectBranches);
         } else if (PULL_REQUEST_ANALYSIS_PARAMETERS.stream().anyMatch(localSettings::containsKey)) {
             return createPullRequestConfiguration(localSettings.get(ScannerProperties.PULL_REQUEST_KEY),
